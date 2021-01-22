@@ -1,0 +1,22 @@
+{% load static %}
+{% load render_partial %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {% include 'shared/_Header_Reference.html' %}
+    <title> GOOD GOODS FOR GOOD MEN </title>
+    {% block header_ref %}{% endblock %}
+</head>
+<body>
+
+{% render_partial 'Header' %}
+{% block content %}{% endblock %}
+{% render_partial 'Footer' %}
+{% block footer_ref %}{% endblock %}
+{% include 'shared/_Footer_Reference.html' %}
+</body>
+</html>
