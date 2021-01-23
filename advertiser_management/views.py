@@ -23,7 +23,7 @@ class AdvertiserList(ListView):
     context_object_name = 'advertisers'
 
     def get_queryset(self):
-        return Advertiser.objects.get_active_ones()
+        return Advertiser.objects.filter(active=True)
 
 
 class AdvertiserRegister(CreateView):
@@ -32,4 +32,11 @@ class AdvertiserRegister(CreateView):
     template_name = 'CreateAdvertiser.html'
     form_class = AdvertiserCreationForm
 
+    def form_valid(self, form):
+        print(form.cleaned_data['username'])
+        return super().form_valid(form)
 
+    def form_invalid(self, form):
+        print(form.is_valid())
+        print(form.errors)
+        return super().form_invalid(form)
