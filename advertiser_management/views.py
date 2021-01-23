@@ -28,7 +28,7 @@ class AdvertiserList(ListView):
 
 class AdvertiserRegister(CreateView):
     model = Advertiser
-    success_url = 'advertiserList'
+    success_url = '/advertiserList'
     template_name = 'CreateAdvertiser.html'
     form_class = AdvertiserCreationForm
 
@@ -39,4 +39,5 @@ class AdvertiserRegister(CreateView):
     def form_invalid(self, form):
         print(form.is_valid())
         print(form.errors)
+        print(form.cleaned_data)
         return super().form_invalid(form)
