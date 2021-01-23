@@ -1,35 +1,34 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 
 class BaseAdvertise(models.Model):
+    active = models.BooleanField(default=True)
     clicks = models.IntegerField(default=0)
     views = models.IntegerField(default=0)
-    active = models.BooleanField(default=True)
+
+    class Meta:
+        abstract = True
 
 
-class Advertiser(AbstractUser, BaseAdvertise):
-
-    def get_advertises(self):
-        return Advertise.objects.get_by_advertiser(self.id)
+class Advertiser(BaseAdvertise):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Advertiser"
 
 
-class AdvertiseManager(models.Manager):
-
-    def get_active_ones(self):
-        return self.get_queryset().filter(active=True)
-
-    def get_by_advertiser(self, advertiser):
-        return self.get_active_ones().filter(advertiser_id=advertiser)
-
-
-class Advertise(BaseAdvertise):
+class Ad(BaseAdvertise):
     title = models.CharField(max_length=30)
-    image_url = models.URLField()
-    link = models.URLField()
-    advertiser_id = models.ForeignKey(Advertiser, on_delete=models.CASCADE)
+    link = models.URLField(max_length=2000)
+    image_url = models.URLField(max_length=2000)
     description = models.TextField()
-    objects = AdvertiseManager()
+
+    advertiser = models.ForeignKey(
+        Advertiser, on_delete=models.CASCADE, related_name='ads'
+    )
+
+    class Meta:
+        verbose_name = "Advertise"
+
+

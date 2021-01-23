@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.forms import ModelForm
 from django.core import validators
 from .models import *
 
@@ -19,32 +20,14 @@ class AdvertiserChangeForm(UserChangeForm):
         fields = ('username', 'password', 'email', 'clicks', 'views')
 
 
-class AdvertiseRegister(UserCreationForm):
+class AdvertiseCreationForm(ModelForm):
     class Meta(UserCreationForm):
         model = Advertise
         fields = ('title', 'image_url', 'link', 'description')
 
 
-class LoginAdvertiser(forms.Form):
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Enter Your Username'}),
-        label='Username',
-        validators=[
-            validators.MaxLengthValidator(limit_value=30, message='Number of character must be lower than 30.'),
-            validators.MinLengthValidator(8, 'Number of character must be at least 8.')
-        ]
-    )
-
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Enter Your Password'}),
-        label='Password',
-        validators=[
-            validators.RegexValidator(
-                regex=r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
-                message='Minimum eight characters, at least one letter and one number',
-            )
-        ]
-    )
+class LoginAdvertiser(forms):
+    pass
 
     def clean_username(self):
         username = self.cleaned_data['username']

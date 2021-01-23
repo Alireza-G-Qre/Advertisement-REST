@@ -1,0 +1,25 @@
+{% extends 'shared/_MainLayout.html' %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+
+    <div class="container" style="padding: 110px">
+
+        <h2 class="text-center"> Register Advertise </h2>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {{ form.title|as_crispy_field }}
+            {{ form.image_url|as_crispy_field }}
+            {{ form.link|as_crispy_field }}
+            {{ form.description|as_crispy_field }}
+
+            <button type="submit" class="btn btn-secondary"> Submit</button>
+
+        </form>
+    </div>
+
+
+{% endblock %}

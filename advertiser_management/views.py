@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from .models import *
-from .forms import AdvertiserCreationForm
+from .forms import AdvertiserCreationForm, AdvertiseCreationForm
 
 
 # Create your views here.
@@ -27,17 +27,17 @@ class AdvertiserList(ListView):
 
 
 class AdvertiserRegister(CreateView):
-    model = Advertiser
+    model = User
     success_url = '/advertiserList'
     template_name = 'CreateAdvertiser.html'
     form_class = AdvertiserCreationForm
 
-    def form_valid(self, form):
-        print(form.cleaned_data['username'])
-        return super().form_valid(form)
 
-    def form_invalid(self, form):
-        print(form.is_valid())
-        print(form.errors)
-        print(form.cleaned_data)
-        return super().form_invalid(form)
+class AdvertiseRegister(CreateView):
+    model = Advertise
+    success_url = '/advertiserList'
+    template_name = 'CreateAdvertise.html'
+    form_class = AdvertiseCreationForm
+
+    def form_valid(self, form):
+        pass
