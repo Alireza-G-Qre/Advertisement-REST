@@ -1,9 +1,13 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core import validators
+from .models import *
+
+User = get_user_model()
 
 
-class RegisterAdvertiser(forms.Form):
+class AdvertiserCreationForm(UserCreationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Enter Your Username'}),
         label='Username',
@@ -71,6 +75,16 @@ class RegisterAdvertiser(forms.Form):
 
         return password
 
+    class Meta(UserCreationForm):
+        model = Advertiser
+        fields = ('username', 'password', 'email')
+
+
+class AdvertiserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm):
+        model = Advertiser
+        fields = ('username', 'password', 'email', 'clicks', 'views')
+
 
 class LoginAdvertiser(forms.Form):
     username = forms.CharField(
@@ -103,8 +117,7 @@ class LoginAdvertiser(forms.Form):
         return username
 
 
-class addAdvertise(forms.Form):
-
+class AdvertiseRegister(UserCreationForm):
     title = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Enter Your Title'}),
         label='Title',
@@ -138,11 +151,6 @@ class addAdvertise(forms.Form):
         ]
     )
 
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        is_user = User.objects.filter(username=username).exists()
-
-        if not is_user:
-            raise forms.ValidationError('Username not found.')
-
-        return username
+    class Meta(UserCreationForm):
+        model = Advertiser
+        fields = ('title', 'img_url', 'link')

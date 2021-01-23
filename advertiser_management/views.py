@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from .models import *
-from .forms import RegisterAdvertiser
+from .forms import AdvertiserCreationForm
 
 
 # Create your views here.
@@ -28,11 +28,8 @@ class AdvertiserList(ListView):
 
 class AdvertiserRegister(CreateView):
     model = Advertiser
-    fields = ['username', 'password', 'email']
     success_url = 'advertiserList'
-    form_class = RegisterAdvertiser
-
-
-
+    template_name = 'CreateAdvertiser.html'
+    form_class = AdvertiserCreationForm
 
 

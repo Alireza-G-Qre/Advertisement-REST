@@ -1,0 +1,28 @@
+{% extends 'shared/_MainLayout.html' %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+
+    <div class="container" style="padding: 110px">
+
+        <h2 class="text-center"> Register Advertiser </h2>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-6">{{ form.username|as_crispy_field }}</div>
+                <div class="col-6">{{ form.email|as_crispy_field }}</div>
+            </div>
+
+            {{ form.password|as_crispy_field }}
+            {{ form.re_password|as_crispy_field }}
+
+            <button type="submit" class="btn btn-secondary"> Submit</button>
+
+        </form>
+    </div>
+
+
+{% endblock %}

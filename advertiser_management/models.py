@@ -1,31 +1,26 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class BaseAdvertise(models.Model):
-    clicks = models.IntegerField()
-    views = models.IntegerField()
+    clicks = models.IntegerField(default=0)
+    views = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
 
 
-class BaseAdvertiseManager(models.Manager):
-
-    def get_active_ones(self):
-        return self.get_queryset().filter(active=True)
-
-    def get_by_id(self, this_id):
-        return self.get_active_ones().filter(id=this_id).first()
-
-
-class Advertiser(BaseAdvertise):
-    username = models.CharField(max_length=30)
-    email = models.EmailField(default='Google@gmail.com')
-    objects = BaseAdvertiseManager()
+class Advertiser(AbstractUser, BaseAdvertise):
 
     def get_advertises(self):
         return Advertise.objects.get_by_advertiser(self.id)
 
+    class Meta:
+        verbose_name = "Advertiser"
 
-class AdvertiseManager(BaseAdvertiseManager):
+
+class AdvertiseManager(models.Manager):
+
+    def get_active_ones(self):
+        return self.get_queryset().filter(active=True)
 
     def get_by_advertiser(self, advertiser):
         return self.get_active_ones().filter(advertiser_id=advertiser)
