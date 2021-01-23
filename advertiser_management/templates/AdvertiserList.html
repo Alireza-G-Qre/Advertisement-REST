@@ -1,0 +1,21 @@
+{% extends 'shared/_MainLayout.html' %}
+
+{% block content %}
+    {% for ones in advertisers %}
+        <div class="card border-secondary mb-3" style="max-width: auto; margin: 10px;">
+            <div class="card-header bg-transparent border-secondary">{{ ones.name }}</div>
+            <div class="card-body text-secondary">
+                <h5 class="card-title"> advertises :) </h5>
+                <div class="card-deck">
+                    {% for advertise in ones.get_advertises %}
+                        {% include 'Advertise_Component.html' with ad=advertise %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-secondary">
+                <button type="button" class="btn btn-secondary btn-lg btn-block"> show more</button>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
