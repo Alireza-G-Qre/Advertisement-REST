@@ -6,16 +6,6 @@ from .forms import AdvertiserCreationForm, AdvertiseCreationForm
 
 # Create your views here.
 
-
-class AdvertiseList(ListView):
-    model = Advertise
-    template_name = ''
-    paginate_by = 4
-
-    def get_queryset(self):
-        return Advertise.objects.get_active_ones()
-
-
 class AdvertiserList(ListView):
     model = Advertiser
     template_name = 'AdvertiserList.html'
@@ -32,12 +22,13 @@ class AdvertiserRegister(CreateView):
     template_name = 'CreateAdvertiser.html'
     form_class = AdvertiserCreationForm
 
+    def form_valid(self, form):
+        Advertiser.objects.create(user=self.object)
+        return super().form_valid(form)
+
 
 class AdvertiseRegister(CreateView):
-    model = Advertise
+    model = Ad
     success_url = '/advertiserList'
     template_name = 'CreateAdvertise.html'
     form_class = AdvertiseCreationForm
-
-    def form_valid(self, form):
-        pass

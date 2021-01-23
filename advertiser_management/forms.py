@@ -1,39 +1,22 @@
-from django import forms
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.forms import ModelForm
-from django.core import validators
-from .models import *
+from django.forms import ModelForm, Form
+from django.contrib.auth.forms import UserCreationForm
 
-User = get_user_model()
+from .models import *
 
 
 class AdvertiserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
-        model = Advertiser
+        model = User
         fields = ('username', 'password1', 'password2', 'email')
 
 
-class AdvertiserChangeForm(UserChangeForm):
-    class Meta(UserChangeForm):
+class LoginAdvertiserForm(Form):
+    class Meta(Form):
         model = Advertiser
-        fields = ('username', 'password', 'email', 'clicks', 'views')
+        fields = ('username', 'password')
 
 
 class AdvertiseCreationForm(ModelForm):
     class Meta(UserCreationForm):
-        model = Advertise
+        model = Ad
         fields = ('title', 'image_url', 'link', 'description')
-
-
-class LoginAdvertiser(forms):
-    pass
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        is_user = User.objects.filter(username=username).exists()
-
-        if not is_user:
-            raise forms.ValidationError('Username not found.')
-
-        return username

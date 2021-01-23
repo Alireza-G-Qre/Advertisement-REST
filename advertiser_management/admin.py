@@ -1,13 +1,12 @@
 from django.contrib import admin
 from .forms import *
-from django.contrib.auth.admin import UserAdmin
 
 
 # Register your models here.
 
 
-class AdvertiserAdmin(UserAdmin):
-    list_display = ['username', 'clicks', 'views']
+class AdvertiserAdmin(admin.ModelAdmin):
+    list_display = ['user']
 
     class Meta:
         model = Advertiser
