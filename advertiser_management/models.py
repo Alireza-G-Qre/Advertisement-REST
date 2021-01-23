@@ -18,6 +18,7 @@ class BaseAdvertiseManager(models.Manager):
 
 class Advertiser(BaseAdvertise):
     username = models.CharField(max_length=30)
+    email = models.EmailField(default='Google@gmail.com')
     objects = BaseAdvertiseManager()
 
     def get_advertises(self):

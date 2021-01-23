@@ -1,5 +1,7 @@
 from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
 from .models import *
+from .forms import RegisterAdvertiser
 
 
 # Create your views here.
@@ -22,4 +24,15 @@ class AdvertiserList(ListView):
 
     def get_queryset(self):
         return Advertiser.objects.get_active_ones()
+
+
+class AdvertiserRegister(CreateView):
+    model = Advertiser
+    fields = ['username', 'password', 'email']
+    success_url = 'advertiserList'
+    form_class = RegisterAdvertiser
+
+
+
+
 
