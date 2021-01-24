@@ -7,7 +7,7 @@
             <div class="card-body text-secondary">
                 <h5 class="card-title"> advertises :) </h5>
                 <div class="card-deck">
-                    {% for advertise in ones.get_ads | slice:'4' %}
+                    {% for advertise in ones.get_ads|slice:':4' %}
                         {% include 'Advertise_Component.html' with ad=advertise %}
                     {% endfor %}
                 </div>

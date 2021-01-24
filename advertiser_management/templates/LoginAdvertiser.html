@@ -1,0 +1,41 @@
+{% extends 'shared/_MainLayout.html' %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+
+    <div class="container" style="padding: 110px">
+
+        <h2 class="text-center"> Login Advertiser </h2>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-6">{{ form.username|as_crispy_field }}</div>
+                <div class="col-6">{{ form.password|as_crispy_field }}</div>
+            </div>
+
+            {{ form.remember_me|as_crispy_field }}
+
+            <button type="submit" class="btn btn-secondary"> Submit</button>
+
+        </form>
+
+        <hr>
+
+        <ul class="container" style="margin: 20px">
+
+            <h5 class="text-danger">Errors</h5>
+
+            {% for error, message in form.error_messages.items %}
+                <li>
+                    <p class="text-danger">{{ error }} : {{ message }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+
+{% endblock %}

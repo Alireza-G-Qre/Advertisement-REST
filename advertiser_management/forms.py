@@ -1,4 +1,5 @@
-from django.forms import ModelForm, Form
+from django.forms import ModelForm, BooleanField
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 
 from .models import *
@@ -10,10 +11,12 @@ class AdvertiserCreationForm(UserCreationForm):
         fields = ('username', 'password1', 'password2', 'email')
 
 
-class LoginAdvertiserForm(Form):
-    class Meta(Form):
+class LoginAdvertiserForm(AuthenticationForm):
+    remember_me = BooleanField(required=False)
+
+    class Meta(AuthenticationForm):
         model = Advertiser
-        fields = ('username', 'password')
+        fields = ('username', 'password', 'remember_me')
 
 
 class AdvertiseCreationForm(ModelForm):

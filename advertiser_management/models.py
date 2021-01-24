@@ -19,6 +19,7 @@ class Advertiser(BaseAdvertise):
 
     class Meta:
         verbose_name = "Advertiser"
+        ordering = ['id']
 
 
 class Ad(BaseAdvertise):
