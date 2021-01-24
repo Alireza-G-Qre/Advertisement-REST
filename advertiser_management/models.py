@@ -14,6 +14,9 @@ class BaseAdvertise(models.Model):
 class Advertiser(BaseAdvertise):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    def get_ads(self):
+        return self.ads.filter(active=True)
+
     class Meta:
         verbose_name = "Advertiser"
 

@@ -23,8 +23,9 @@ class AdvertiserRegister(CreateView):
     form_class = AdvertiserCreationForm
 
     def form_valid(self, form):
+        result = super().form_valid(form)
         Advertiser.objects.create(user=self.object)
-        return super().form_valid(form)
+        return result
 
 
 class AdvertiseRegister(CreateView):
