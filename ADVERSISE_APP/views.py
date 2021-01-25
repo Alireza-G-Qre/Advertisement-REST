@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from django.shortcuts import render
 
 
@@ -14,3 +14,7 @@ class BehindFooter(TemplateView):
 
     def post(self, request, **kwargs):
         return render(request, self.template_name)
+
+
+class Home(RedirectView):
+    url = '/advertiserList'

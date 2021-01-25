@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Quick-start development settings - unsuitable for production
@@ -24,6 +23,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'u+fmma%y^6^wn@q0d&e#u36wty3e3nmo42#l=7ja23par$*$%+'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

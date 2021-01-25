@@ -1,6 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import DetailView, RedirectView
 from .models import *
 from .forms import AdvertiserCreationForm, AdvertiseCreationForm, LoginAdvertiserForm
 from django.contrib.auth import login
@@ -10,12 +11,22 @@ from django.contrib.auth import login
 
 class AdvertiserList(ListView):
     model = Advertiser
-    template_name = 'AdvertiserList.html'
+    template_name = 'Lists/AdvertiserList.html'
     paginate_by = 4
     context_object_name = 'advertisers'
 
     def get_queryset(self):
-        return Advertiser.objects.filter(active=True)
+
+        advertisers = Advertiser.objects.filter(active=True)
+
+        for advertiser in advertisers:
+
+            ads = advertiser.ads.filter(active=True)
+            _limit = min(len(ads), self.paginate_by)
+            for number in range(_limit):
+                ads[number].view()
+
+        return advertisers
 
 
 class AdvertiserRegister(CreateView):
@@ -36,6 +47,10 @@ class AdvertiseRegister(CreateView):
     template_name = 'CreateAdvertise.html'
     form_class = AdvertiseCreationForm
 
+    def form_valid(self, form):
+        form.instance.advertiser = self.request.user.advertiser
+        return super().form_valid(form)
+
 
 class LoginAdvertiser(LoginView):
     form_class = LoginAdvertiserForm
@@ -45,7 +60,6 @@ class LoginAdvertiser(LoginView):
     def form_valid(self, form):
         remember_me = form.cleaned_data['remember_me']
         login(self.request, form.get_user())
-
         if remember_me:
             self.request.session.set_expiry(1209600)
 
@@ -56,4 +70,27 @@ class LoginAdvertiser(LoginView):
 
 
 class LogoutAdvertiser(LogoutView):
-    template_name = 'AdvertiserList.html'
+    template_name = 'Lists/AdvertiserList.html'
+
+
+class AdvertiserDetailView(DetailView):
+    template_name = 'Lists/AdvertiseList.html'
+    model = Advertiser
+    context_object_name = ''
+
+    def get_context_data(self, **kwargs):
+        result = super().get_context_data(**kwargs)
+        ads = result['advertiser'].ads.filter(active=True)
+        for ad in ads:
+            ad.view()
+
+        return result
+
+
+class Click_and_Redirect(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        ad = Ad.get_by_id(kwargs['pk'])
+        print(ad)
+        ad.click()
+        return ad.link

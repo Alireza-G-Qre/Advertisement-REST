@@ -1,12 +1,10 @@
-<div class="card">
-    <div class="" style="margin: auto;">
-        <img src="{{ ad.image_url }}" class="card-img-top" alt="advertise image">
+<div class="card" style="min-width: 25%">
+    <img src="{{ ad.image_url }}" class="card-img-top" alt="advertise image" style="max-height: 500px">
         <div class="card-body">
             <h5 class="card-title">{{ ad.title }}</h5>
             <p class="card-text"> {{ ad.description }}</p>
         </div>
         <div class="card-footer">
-            <a href="{{ ad.link }}"><small class="text-muted"> click here </small></a>
+            <a href="/advertise/{{ ad.id }}"><small class="text-muted"> click here </small></a>
         </div>
-    </div>
 </div>

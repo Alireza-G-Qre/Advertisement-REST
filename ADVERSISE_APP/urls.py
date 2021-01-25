@@ -24,6 +24,7 @@ urlpatterns = [
     path('Header/', BehindHeader.as_view(), name='Header'),
     path('Footer/', BehindFooter.as_view(), name='Footer'),
     path('', include('advertiser_management.urls', namespace='advertise')),
+    path('', Home.as_view(), name='Home'),
     path('admin/', admin.site.urls),
 ]
 

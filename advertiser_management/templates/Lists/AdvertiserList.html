@@ -2,20 +2,25 @@
 
 {% block content %}
     {% for ones in advertisers %}
+
         <div class="card border-secondary mb-3" style="max-width: auto; margin: 10px;">
             <div class="card-header bg-transparent border-secondary">{{ ones.user.username }}</div>
             <div class="card-body text-secondary">
                 <h5 class="card-title"> advertises :) </h5>
-                <div class="card-deck">
+                <div class="card-group">
                     {% for advertise in ones.get_ads|slice:':4' %}
                         {% include 'Advertise_Component.html' with ad=advertise %}
                     {% endfor %}
                 </div>
             </div>
+
             <div class="card-footer bg-transparent border-secondary">
-                <button type="button" class="btn btn-secondary btn-lg btn-block"> show more</button>
+                <button type="button" class="btn btn-secondary btn-lg btn-block"
+                        onclick="location.href = 'advertiser/{{ ones.id }}';"> show more
+                </button>
             </div>
         </div>
+
     {% endfor %}
 
 {% endblock %}

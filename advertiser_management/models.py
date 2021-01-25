@@ -12,7 +12,9 @@ class BaseAdvertise(models.Model):
 
 
 class Advertiser(BaseAdvertise):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='advertiser'
+    )
 
     def get_ads(self):
         return self.ads.filter(active=True)
@@ -20,6 +22,14 @@ class Advertiser(BaseAdvertise):
     class Meta:
         verbose_name = "Advertiser"
         ordering = ['id']
+
+    def view(self):
+        self.views += 1
+        self.save()
+
+    def click(self):
+        self.clicks += 1
+        self.save()
 
 
 class Ad(BaseAdvertise):
@@ -32,7 +42,19 @@ class Ad(BaseAdvertise):
         Advertiser, on_delete=models.CASCADE, related_name='ads'
     )
 
+    @classmethod
+    def get_by_id(cls, ad_id):
+        return cls.objects.get(active=True, id=ad_id)
+
     class Meta:
         verbose_name = "Advertise"
 
+    def view(self):
+        self.views += 1
+        self.advertiser.view()
+        self.save()
 
+    def click(self):
+        self.clicks += 1
+        self.advertiser.click()
+        self.save()
