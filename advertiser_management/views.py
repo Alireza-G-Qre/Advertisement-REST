@@ -21,7 +21,7 @@ class AdvertiserList(ListView):
 
         for advertiser in advertisers:
 
-            ads = advertiser.ads.filter(active=True)
+            ads = advertiser.get_ads()
             _limit = min(len(ads), self.paginate_by)
             for number in range(_limit):
                 ads[number].view(self.request.ip)
@@ -76,11 +76,11 @@ class LogoutAdvertiser(LogoutView):
 class AdvertiserDetailView(DetailView):
     template_name = 'Lists/AdvertiseList.html'
     model = Advertiser
-    context_object_name = ''
+    context_object_name = 'advertiser'
 
     def get_context_data(self, **kwargs):
         result = super().get_context_data(**kwargs)
-        ads = result['advertiser'].ads.filter(active=True)
+        ads = result['advertiser'].get_ads()
         for ad in ads:
             ad.view(self.request.ip)
 
@@ -91,6 +91,5 @@ class Click_and_Redirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         ad = Ad.get_by_id(kwargs['pk'])
-        print(ad)
         ad.click(self.request.ip)
         return ad.link

@@ -15,7 +15,10 @@ class Advertiser(BaseAdvertise):
     )
 
     def get_ads(self):
-        return self.ads.filter(active=True)
+        return self.ads.filter(active=True, approve=True)
+
+    def __str__(self):
+        return self.user.username
 
     class Meta:
         verbose_name = "Advertiser"
@@ -23,6 +26,7 @@ class Advertiser(BaseAdvertise):
 
 
 class Ad(BaseAdvertise):
+    approve = models.BooleanField(default=False)
     title = models.CharField(max_length=30)
     link = models.URLField(max_length=2000)
     image_url = models.URLField(max_length=2000)
@@ -34,13 +38,16 @@ class Ad(BaseAdvertise):
 
     @classmethod
     def get_by_id(cls, ad_id):
-        return cls.objects.get(active=True, id=ad_id)
+        return cls.objects.get(active=True, approve=True, id=ad_id)
 
     def view(self, ip):
         View_Ad.objects.create(ip=ip, ad=self)
 
     def click(self, ip):
         Click_Ad.objects.create(ip=ip, ad=self)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         verbose_name = "Advertise"

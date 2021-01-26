@@ -17,9 +17,12 @@ admin.site.register(Advertiser, AdvertiserAdmin)
 
 class AdAdmin(admin.ModelAdmin):
     list_display = ['title']
+    fields = ['title', 'link', 'image_url', 'description', 'active', 'approve']
 
     class Meta:
         model = Ad
 
 
 admin.site.register(Ad, AdAdmin)
+
+
