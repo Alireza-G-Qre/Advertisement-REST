@@ -53,6 +53,21 @@ class Ad(BaseAdvertise):
         verbose_name = "Advertise"
 
 
+class RequestedAdManager(models.Manager):
+
+    def get_queryset(self):
+        return super(RequestedAdManager, self).get_queryset().filter(approve=False)
+
+
+class RequestedAd(Ad):
+
+    objects = RequestedAdManager()
+
+    class Meta:
+        verbose_name = "Requested Ad"
+        proxy = True
+
+
 class BaseVisiting(models.Model):
     time = models.DateTimeField(auto_now=True)
     ip = models.GenericIPAddressField()
