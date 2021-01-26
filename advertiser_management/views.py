@@ -24,7 +24,7 @@ class AdvertiserList(ListView):
             ads = advertiser.ads.filter(active=True)
             _limit = min(len(ads), self.paginate_by)
             for number in range(_limit):
-                ads[number].view()
+                ads[number].view(self.request.ip)
 
         return advertisers
 
@@ -82,7 +82,7 @@ class AdvertiserDetailView(DetailView):
         result = super().get_context_data(**kwargs)
         ads = result['advertiser'].ads.filter(active=True)
         for ad in ads:
-            ad.view()
+            ad.view(self.request.ip)
 
         return result
 
@@ -92,5 +92,5 @@ class Click_and_Redirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         ad = Ad.get_by_id(kwargs['pk'])
         print(ad)
-        ad.click()
+        ad.click(self.request.ip)
         return ad.link
