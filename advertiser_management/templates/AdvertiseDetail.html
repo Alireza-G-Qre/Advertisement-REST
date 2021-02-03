@@ -1,0 +1,24 @@
+{% extends 'shared/_MainLayout.html' %}
+
+{% block content %}
+
+    <div class="container" style="padding: 100px">
+        <h4 class="text-info text-center">Clicks info</h4>
+        <ul class="list-group">
+            {% for object in clicks_per_hour %}
+                {% include 'BaseAd_VC_Component.html' with obj=object %}
+            {% endfor %}
+        </ul>
+
+        <hr>
+
+        <h4 class="text-info text-center">Views info</h4>
+        <ul class="list-group">
+            {% for object in views_per_hour %}
+                {% include 'BaseAd_VC_Component.html' with obj=object %}
+            {% endfor %}
+        </ul>
+
+    </div>
+
+{% endblock %}

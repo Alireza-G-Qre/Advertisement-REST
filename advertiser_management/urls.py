@@ -10,5 +10,6 @@ urlpatterns = [
     path('advertiser/new', AdvertiserRegister.as_view(), name='register'),
     path('advertise/new', AdvertiseRegister.as_view(), name='create_ad'),
     path('advertiser/<pk>', AdvertiserDetailView.as_view(), name='detail'),
-    path('advertise/<pk>', Click_and_Redirect.as_view(), name='click'),
+    path('advertise/<pk>', ClickRedirect.as_view(), name='click'),
+    path('advertiseDetail/<pk>', AdDetailView.as_view(), name='ad_detail'),
 ]

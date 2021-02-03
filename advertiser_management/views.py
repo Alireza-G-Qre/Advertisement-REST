@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import DetailView, RedirectView,FormView
+from django.views.generic import DetailView, RedirectView, FormView
 from .models import *
 from .forms import AdvertiserCreationForm, AdvertiseCreationForm, LoginAdvertiserForm
 from django.contrib.auth import login
@@ -87,9 +87,31 @@ class AdvertiserDetailView(DetailView):
         return result
 
 
-class Click_and_Redirect(RedirectView):
+class ClickRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         ad = Ad.get_by_id(kwargs['pk'])
         ad.click(self.request.ip)
         return ad.link
+
+
+class AdDetailView(DetailView):
+    template_name = 'AdvertiseDetail.html'
+    model = Ad
+    context_object_name = 'ad'
+
+    @staticmethod
+    def clicks_per_hour(obj):
+        return obj.clicks.annotate(hour=ExtractHour('time')).values('hour') \
+            .annotate(count=Count('hour')).values('hour', 'count')
+
+    @staticmethod
+    def views_per_hour(obj):
+        return obj.views.annotate(hour=ExtractHour('time')).values('hour') \
+            .annotate(count=Count('hour'))
+
+    def get_context_data(self, **kwargs):
+        data = super(AdDetailView, self).get_context_data(**kwargs)
+        data['clicks_per_hour'] = self.clicks_per_hour(data['ad'])
+        data['views_per_hour'] = self.views_per_hour(data['ad'])
+        return data
