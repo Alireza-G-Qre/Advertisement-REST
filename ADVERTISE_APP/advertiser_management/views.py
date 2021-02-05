@@ -6,6 +6,7 @@ from django.views.generic import RedirectView
 
 from advertiser_management.serializers import *
 from rest_framework.generics import *
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from .forms import LoginAdvertiserForm
 from .models import *
@@ -74,6 +75,8 @@ class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin):
 class CreateAdvertiser(CreateAPIView):
     queryset = Advertiser.objects.filter(active=True)
     serializer_class = AdvertiserSerializer
+    template_name = 'CreateAdvertiser.html'
+    renderer_classes = [TemplateHTMLRenderer]
 
     def create(self, request, *args, **kwargs):
         return super(CreateAdvertiser, self).create(request, *args, **kwargs)
