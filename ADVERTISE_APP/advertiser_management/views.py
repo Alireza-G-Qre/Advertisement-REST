@@ -13,7 +13,7 @@ from .models import *
 
 # Create your views here.
 
-class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin):
+class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     serializer_class = AdvertiserSerializer
     queryset = Advertiser.objects.filter(active=True)
 
@@ -22,10 +22,6 @@ class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModel
             return self.retrieve(request, pk)
         else:
             return self.list(request)
-
-    def post(self, request):
-        print(request.data)
-        return self.create(request)
 
     def list(self, request, *args, **kwargs):
         result = super(AdvertiserView, self).list(request, *args, **kwargs)
@@ -41,8 +37,8 @@ class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModel
         model = Advertiser
 
 
-class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin):
-    queryset = Ad.objects.filter(active=True)
+class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    queryset = Ad.objects.filter(active=True, approve=True)
     serializer_class = AdvertiseSerializer
 
     @staticmethod
@@ -61,9 +57,6 @@ class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, m
         else:
             return self.list(request)
 
-    def post(self, request):
-        return self.create(request)
-
     def list(self, request, *args, **kwargs):
         result = super(AdView, self).list(request, *args, **kwargs)
         print(result)
@@ -73,6 +66,28 @@ class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, m
         result = super(AdView, self).retrieve(request, *args, **kwargs)
         print(result)
         return result
+
+    class Meta:
+        model = Ad
+
+
+class CreateAdvertiser(CreateAPIView):
+    queryset = Advertiser.objects.filter(active=True)
+    serializer_class = AdvertiserSerializer
+
+    def create(self, request, *args, **kwargs):
+        return super(CreateAdvertiser, self).create(request, *args, **kwargs)
+
+    class Meta:
+        model = Advertiser
+
+
+class CreateAd(CreateAPIView):
+    queryset = Ad.objects.filter(active=True, approve=True)
+    serializer_class = AdvertiseSerializer
+
+    def create(self, request, *args, **kwargs):
+        return super(CreateAd, self).create(*args, **kwargs)
 
     class Meta:
         model = Ad

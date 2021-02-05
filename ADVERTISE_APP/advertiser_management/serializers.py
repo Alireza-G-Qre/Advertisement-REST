@@ -2,44 +2,40 @@ from rest_framework import serializers
 from .models import *
 
 
-class OwnerSerializer(serializers.ModelSerializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
-    rePassword = serializers.CharField()
-
-    def __init__(self, *args, **kwargs):
-        super(OwnerSerializer, self).__init__(*args, **kwargs)
-        if kwargs['rePassword']:
-            self.fields.append('rePassword')
-
-    def validate(self, data):
-        if data['password'] != data['rePassword'] and 'rePassword' in data:
-            raise serializers.ValidationError("Passwords not the same  :(")
-
-    class Meta(serializers.SerializerMetaclass):
-        fields = ['username', 'password']
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta(serializers.SerializerMetaclass):
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'password']
 
 
 class AdvertiserSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='user.username')
+    user = UserSerializer()
+
+    def create(self, validated_data):
+        user = UserSerializer().create(validated_data=validated_data['user'])
+        return super(AdvertiserSerializer, self).create({'user': user})
 
     class Meta(serializers.SerializerMetaclass):
         model = Advertiser
-        fields = ['owner', 'active']
+        fields = ['user']
 
 
 class AdvertiseSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='advertiser.user.username')
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+
+        if request and hasattr(request, 'user'):
+            user = request.user
+        else:
+            raise serializers.ValidationError({"detail": "no User"})
+
+        validated_data['advertiser'] = user
+        return super(AdvertiseSerializer, self).create(validated_data)
 
     class Meta(serializers.SerializerMetaclass):
         model = Ad
-        fields = ['owner', 'title', 'linkUrl', 'img_Url', 'description']
+        fields = ['title', 'linkUrl', 'img_Url', 'description']
 
 
 class ViewAdSerializer(serializers.ModelSerializer):
