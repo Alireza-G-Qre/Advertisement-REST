@@ -41,10 +41,10 @@ class Ad(BaseAdvertise):
         return cls.objects.get(active=True, approve=True, id=ad_id)
 
     def view(self, ip):
-        View_Ad.objects.create(ip=ip, ad=self)
+        ViewAd.objects.create(ip=ip, ad=self)
 
     def click(self, ip):
-        Click_Ad.objects.create(ip=ip, ad=self)
+        ClickAd.objects.create(ip=ip, ad=self)
 
     def __str__(self):
         return self.title
@@ -60,7 +60,6 @@ class RequestedAdManager(models.Manager):
 
 
 class RequestedAd(Ad):
-
     objects = RequestedAdManager()
 
     class Meta:
@@ -69,28 +68,26 @@ class RequestedAd(Ad):
 
 
 class BaseVisiting(models.Model):
-    time = models.DateTimeField(auto_now=True)
+    time = models.DateTimeField(auto_now_add=True)
     ip = models.GenericIPAddressField()
 
     class Meta:
         abstract = True
 
 
-class View_Ad(BaseVisiting):
+class ViewAd(BaseVisiting):
     ad = models.ForeignKey(
         Ad, on_delete=models.CASCADE, related_name='views'
     )
 
     class Meta:
         verbose_name = "Ad View"
-        ordering = ['-id']
 
 
-class Click_Ad(BaseVisiting):
+class ClickAd(BaseVisiting):
     ad = models.ForeignKey(
         Ad, on_delete=models.CASCADE, related_name='clicks'
     )
 
     class Meta:
         verbose_name = "Ad Click"
-        ordering = ['-id']

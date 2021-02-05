@@ -1,7 +1,9 @@
+from django.db.models import Count
+from django.db.models.functions import ExtractHour
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import DetailView, RedirectView, FormView
+from django.views.generic import DetailView, RedirectView
 from .models import *
 from .forms import AdvertiserCreationForm, AdvertiseCreationForm, LoginAdvertiserForm
 from django.contrib.auth import login

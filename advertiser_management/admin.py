@@ -30,7 +30,7 @@ admin.site.register(Ad, AdAdmin)
 
 
 class RequestedAdAdmin(admin.ModelAdmin):
-    list_display = ['title', 'my_actions']
+    list_display = ['title']
     fields = ['approve']
     actions = ['accept', 'reject']
 
