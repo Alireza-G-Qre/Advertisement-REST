@@ -1,57 +1,80 @@
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Count
 from django.db.models.functions import ExtractHour
-from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView
-from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import DetailView, RedirectView
+from django.views.generic import RedirectView
+
+from serializers import *
+from rest_framework.generics import *
+
+from .forms import LoginAdvertiserForm
 from .models import *
-from .forms import AdvertiserCreationForm, AdvertiseCreationForm, LoginAdvertiserForm
-from django.contrib.auth import login
 
 
 # Create your views here.
 
-class AdvertiserList(ListView):
-    model = Advertiser
-    template_name = 'Lists/AdvertiserList.html'
-    paginate_by = 4
-    context_object_name = 'advertisers'
+class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin):
+    serializer_class = AdvertiserSerializer
+    queryset = Advertiser.objects.filter(active=True)
 
-    def get_queryset(self):
+    def get(self, request, pk=None):
+        if pk:
+            return self.retrieve(request, pk)
+        else:
+            return self.list(request)
 
-        advertisers = Advertiser.objects.filter(active=True)
+    def post(self, request):
+        return self.create(request)
 
-        for advertiser in advertisers:
-
-            ads = advertiser.get_ads()
-            _limit = min(len(ads), self.paginate_by)
-            for number in range(_limit):
-                ads[number].view(self.request.ip)
-
-        return advertisers
-
-
-class AdvertiserRegister(CreateView):
-    model = User
-    success_url = '/advertiserList'
-    template_name = 'CreateAdvertiser.html'
-    form_class = AdvertiserCreationForm
-
-    def form_valid(self, form):
-        result = super().form_valid(form)
-        Advertiser.objects.create(user=self.object)
+    def list(self, request, *args, **kwargs):
+        result = super(AdvertiserView, self).list(request, *args, **kwargs)
+        print(result)
         return result
 
+    def retrieve(self, request, *args, **kwargs):
+        result = super(AdvertiserView, self).retrieve(request, *args, **kwargs)
+        print(result)
+        return result
 
-class AdvertiseRegister(CreateView):
-    model = Ad
-    success_url = '/advertiserList'
-    template_name = 'CreateAdvertise.html'
-    form_class = AdvertiseCreationForm
+    class Meta:
+        model = Advertiser
 
-    def form_valid(self, form):
-        form.instance.advertiser = self.request.user.advertiser
-        return super().form_valid(form)
+
+class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin):
+    queryset = Ad.objects.filter(active=True)
+    serializer_class = AdvertiseSerializer
+
+    @staticmethod
+    def clicks_per_hour(obj):
+        return obj.clicks.annotate(hour=ExtractHour('time')).values('hour') \
+            .annotate(count=Count('hour')).values('hour', 'count')
+
+    @staticmethod
+    def views_per_hour(obj):
+        return obj.views.annotate(hour=ExtractHour('time')).values('hour') \
+            .annotate(count=Count('hour'))
+
+    def get(self, request, pk=None):
+        if pk:
+            return self.retrieve(request, pk)
+        else:
+            return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
+
+    def list(self, request, *args, **kwargs):
+        result = super(AdView, self).list(request, *args, **kwargs)
+        print(result)
+        return result
+
+    def retrieve(self, request, *args, **kwargs):
+        result = super(AdView, self).retrieve(request, *args, **kwargs)
+        print(result)
+        return result
+
+    class Meta:
+        model = Ad
 
 
 class LoginAdvertiser(LoginView):
@@ -75,45 +98,9 @@ class LogoutAdvertiser(LogoutView):
     template_name = 'Lists/AdvertiserList.html'
 
 
-class AdvertiserDetailView(DetailView):
-    template_name = 'Lists/AdvertiseList.html'
-    model = Advertiser
-    context_object_name = 'advertiser'
-
-    def get_context_data(self, **kwargs):
-        result = super().get_context_data(**kwargs)
-        ads = result['advertiser'].get_ads()
-        for ad in ads:
-            ad.view(self.request.ip)
-
-        return result
-
-
 class ClickRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         ad = Ad.get_by_id(kwargs['pk'])
         ad.click(self.request.ip)
         return ad.link
-
-
-class AdDetailView(DetailView):
-    template_name = 'AdvertiseDetail.html'
-    model = Ad
-    context_object_name = 'ad'
-
-    @staticmethod
-    def clicks_per_hour(obj):
-        return obj.clicks.annotate(hour=ExtractHour('time')).values('hour') \
-            .annotate(count=Count('hour')).values('hour', 'count')
-
-    @staticmethod
-    def views_per_hour(obj):
-        return obj.views.annotate(hour=ExtractHour('time')).values('hour') \
-            .annotate(count=Count('hour'))
-
-    def get_context_data(self, **kwargs):
-        data = super(AdDetailView, self).get_context_data(**kwargs)
-        data['clicks_per_hour'] = self.clicks_per_hour(data['ad'])
-        data['views_per_hour'] = self.views_per_hour(data['ad'])
-        return data
