@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.db.models.functions import ExtractHour
 from django.views.generic import RedirectView
 
-from serializers import *
+from advertiser_management.serializers import *
 from rest_framework.generics import *
 
 from .forms import LoginAdvertiserForm
@@ -24,6 +24,7 @@ class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModel
             return self.list(request)
 
     def post(self, request):
+        print(request.data)
         return self.create(request)
 
     def list(self, request, *args, **kwargs):

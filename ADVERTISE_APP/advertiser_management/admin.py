@@ -18,6 +18,7 @@ admin.site.register(Advertiser, AdvertiserAdmin)
 class AdAdmin(admin.ModelAdmin):
     list_display = ['title', 'approve']
     fields = ['title', 'linkUrl', 'img_Url', 'description', 'active', 'approve']
+    list_filter = ['approve']
 
     class Meta:
         model = Ad

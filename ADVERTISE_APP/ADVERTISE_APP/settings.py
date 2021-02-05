@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'advertiser_management.apps.AdvertiserManagementConfig',
     'django_render_partial',
     'crispy_forms',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
