@@ -10,15 +10,7 @@ class BaseAdvertise(models.Model):
 
 
 class Advertiser(BaseAdvertise):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='advertiser'
-    )
-
-    def get_ads(self):
-        return self.ads.filter(active=True, approve=True)
-
-    def __str__(self):
-        return self.user.username
+    user = models.OneToOneField(User, related_name='advertiser', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Advertiser"
@@ -26,45 +18,15 @@ class Advertiser(BaseAdvertise):
 
 
 class Ad(BaseAdvertise):
-    approve = models.BooleanField(default=False)
+    advertiser = models.ForeignKey(Advertiser, related_name='ads', on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
-    link = models.URLField(max_length=2000)
-    image_url = models.URLField(max_length=2000)
+    approve = models.BooleanField(default=False)
+    linkUrl = models.URLField(max_length=2000)
+    img_Url = models.URLField(max_length=2000)
     description = models.TextField()
-
-    advertiser = models.ForeignKey(
-        Advertiser, on_delete=models.CASCADE, related_name='ads'
-    )
-
-    @classmethod
-    def get_by_id(cls, ad_id):
-        return cls.objects.get(active=True, approve=True, id=ad_id)
-
-    def view(self, ip):
-        ViewAd.objects.create(ip=ip, ad=self)
-
-    def click(self, ip):
-        ClickAd.objects.create(ip=ip, ad=self)
-
-    def __str__(self):
-        return self.title
 
     class Meta:
         verbose_name = "Advertise"
-
-
-class RequestedAdManager(models.Manager):
-
-    def get_queryset(self):
-        return super(RequestedAdManager, self).get_queryset().filter(approve=False)
-
-
-class RequestedAd(Ad):
-    objects = RequestedAdManager()
-
-    class Meta:
-        verbose_name = "Requested Ad"
-        proxy = True
 
 
 class BaseVisiting(models.Model):
@@ -76,18 +38,14 @@ class BaseVisiting(models.Model):
 
 
 class ViewAd(BaseVisiting):
-    ad = models.ForeignKey(
-        Ad, on_delete=models.CASCADE, related_name='views'
-    )
+    ad = models.ForeignKey(Ad, related_name='views', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Ad View"
 
 
 class ClickAd(BaseVisiting):
-    ad = models.ForeignKey(
-        Ad, on_delete=models.CASCADE, related_name='clicks'
-    )
+    ad = models.ForeignKey(Ad, related_name='clicks', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Ad Click"

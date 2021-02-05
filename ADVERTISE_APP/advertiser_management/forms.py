@@ -22,4 +22,4 @@ class LoginAdvertiserForm(AuthenticationForm):
 class AdvertiseCreationForm(ModelForm):
     class Meta(UserCreationForm):
         model = Ad
-        fields = ('title', 'image_url', 'link', 'description')
+        fields = ('title', 'img_Url', 'linkUrl', 'description')
