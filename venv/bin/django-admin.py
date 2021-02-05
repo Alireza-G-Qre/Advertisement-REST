@@ -1,4 +1,4 @@
-#!/home/alireza/PychPro/ADVERSISE_APP/venv/bin/python
+#!/home/yektanet/PycharmProjects/Advertisement-REST/venv/bin/python
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
