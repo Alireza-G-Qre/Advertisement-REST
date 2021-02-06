@@ -12,5 +12,5 @@ router.register(r'ad', AdView, basename='ad')
 urlpatterns = [
     path('', include(router.urls)),
     path(r'login', LoginAPIView.as_view(), name='login'),
-    # path(r'logout', knox.LogoutView.as_view(), name='logout'),
+    path(r'logout', LogoutAPIView.as_view(), name='logout'),
 ]

@@ -1,9 +1,11 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.db.models.functions import ExtractHour
 from django.views.generic import RedirectView
 from django.db.models import Count
+from rest_framework.authentication import TokenAuthentication
 
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 
@@ -14,6 +16,8 @@ from .models import *
 
 
 # Create your views here.
+from .permissions import IsAdvertiser, NotAuthentication
+
 
 class AdvertiserView(ModelViewSet):
     queryset = Advertiser.objects.filter(active=True)
@@ -61,6 +65,7 @@ class AdView(ModelViewSet):
 
 class LoginAPIView(GenericAPIView):
     serializer_class = UserSerializer
+    permission_classes = [NotAuthentication]
 
     @staticmethod
     def post(request):
@@ -72,6 +77,14 @@ class LoginAPIView(GenericAPIView):
         token, created = Token.objects.get_or_create(user=user)
         login(request, token.user)
         return Response(data={'auth_token': token.key}, status=HTTP_200_OK)
+
+
+class LogoutAPIView(GenericAPIView):
+
+    @staticmethod
+    def get(request):
+        logout(request)
+        return Response(status=HTTP_200_OK)
 
 
 class ClickRedirect(RedirectView):
