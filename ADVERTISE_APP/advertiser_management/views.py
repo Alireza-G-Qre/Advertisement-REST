@@ -1,22 +1,18 @@
-from django.contrib.auth import login
-from django.contrib.auth.views import LoginView, LogoutView
-from django.db.models import Count
 from django.db.models.functions import ExtractHour
 from django.views.generic import RedirectView
+from django.db.models import Count
 
 from advertiser_management.serializers import *
-from rest_framework.generics import *
-from rest_framework.renderers import TemplateHTMLRenderer
-
-from .forms import LoginAdvertiserForm
+from rest_framework.viewsets import *
+from knox import views as knox
 from .models import *
 
 
 # Create your views here.
 
-class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin):
-    serializer_class = AdvertiserSerializer
+class AdvertiserView(ModelViewSet):
     queryset = Advertiser.objects.filter(active=True)
+    serializer_class = AdvertiserSerializer
 
     def get(self, request, pk=None):
         if pk:
@@ -24,21 +20,11 @@ class AdvertiserView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModel
         else:
             return self.list(request)
 
-    def list(self, request, *args, **kwargs):
-        result = super(AdvertiserView, self).list(request, *args, **kwargs)
-        print(result)
-        return result
-
-    def retrieve(self, request, *args, **kwargs):
-        result = super(AdvertiserView, self).retrieve(request, *args, **kwargs)
-        print(result)
-        return result
-
     class Meta:
         model = Advertiser
 
 
-class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class AdView(ModelViewSet):
     queryset = Ad.objects.filter(active=True, approve=True)
     serializer_class = AdvertiseSerializer
 
@@ -58,68 +44,26 @@ class AdView(GenericAPIView, mixins.ListModelMixin, mixins.RetrieveModelMixin):
         else:
             return self.list(request)
 
-    def list(self, request, *args, **kwargs):
-        result = super(AdView, self).list(request, *args, **kwargs)
-        print(result)
-        return result
-
     def retrieve(self, request, *args, **kwargs):
         result = super(AdView, self).retrieve(request, *args, **kwargs)
-        print(result)
+        result.data['clicks_per_hour'] = self.clicks_per_hour(self.get_object())
+        result.data['views_per_hour'] = self.views_per_hour(self.get_object())
         return result
 
-    class Meta:
-        model = Ad
-
-
-class CreateAdvertiser(CreateAPIView):
-    queryset = Advertiser.objects.filter(active=True)
-    serializer_class = AdvertiserSerializer
-    template_name = 'CreateAdvertiser.html'
-    renderer_classes = [TemplateHTMLRenderer]
-
     def create(self, request, *args, **kwargs):
-        return super(CreateAdvertiser, self).create(request, *args, **kwargs)
-
-    class Meta:
-        model = Advertiser
-
-
-class CreateAd(CreateAPIView):
-    queryset = Ad.objects.filter(active=True, approve=True)
-    serializer_class = AdvertiseSerializer
-
-    def create(self, request, *args, **kwargs):
-        return super(CreateAd, self).create(*args, **kwargs)
+        request.data['advertiser'] = request.user.advertiser
+        return super(AdView, self).create(request, *args, **kwargs)
 
     class Meta:
         model = Ad
 
 
-class LoginAdvertiser(LoginView):
-    form_class = LoginAdvertiserForm
-    template_name = 'LoginAdvertiser.html'
-    success_url = '/advertiserList'
-
-    def form_valid(self, form):
-        remember_me = form.cleaned_data['remember_me']
-        login(self.request, form.get_user())
-        if remember_me:
-            self.request.session.set_expiry(1209600)
-
-        return super(LoginAdvertiser, self).form_valid(form)
-
-    def form_invalid(self, form):
-        return super(LoginAdvertiser, self).form_invalid(form)
-
-
-class LogoutAdvertiser(LogoutView):
-    template_name = 'Lists/AdvertiserList.html'
-
+class LoginKnoxView(knox.LoginView):
+    parser_classes = LoginSerializer
 
 class ClickRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        ad = Ad.get_by_id(kwargs['pk'])
+        ad = Ad.objects.get(id=kwargs['pk'])
         ad.click(self.request.ip)
         return ad.link

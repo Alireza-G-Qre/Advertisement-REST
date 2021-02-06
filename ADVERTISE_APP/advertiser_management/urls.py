@@ -1,17 +1,17 @@
+from rest_framework.routers import DefaultRouter
+
 from .views import *
-from django.urls import path
+from knox import views as knox
+from django.urls import path, include
 
 app_name = 'advertise'
 
+router = DefaultRouter()
+router.register(r'advertiser', AdvertiserView, basename='advertiser')
+router.register(r'ad', AdView, basename='ad')
+
 urlpatterns = [
-    path('advertiser/login', LoginAdvertiser.as_view(), name='login'),
-    path('advertiser/logout', LogoutAdvertiser.as_view(), name='logout'),
-
-    path('advertiser/newOne', CreateAdvertiser.as_view(), name='advertiser-register'),
-    path('advertiser/<pk>', AdvertiserView.as_view(), name='advertiser-detail'),
-    path('advertiserList', AdvertiserView.as_view(), name='advertiser-list'),
-
-    path('advertise/<pk>', AdView.as_view(), name='ad-detail'),
-    path('advertise/create', CreateAd.as_view(), name='ad-create'),
-    path('advertise/<pk>', ClickRedirect.as_view(), name='ad-redirect'),
+    path('', include(router.urls)),
+    path(r'login', LoginKnoxView.as_view(), name='login'),
+    path(r'logout', knox.LogoutView.as_view(), name='logout'),
 ]

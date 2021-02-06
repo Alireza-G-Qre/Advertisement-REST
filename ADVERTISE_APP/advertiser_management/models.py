@@ -49,3 +49,13 @@ class ClickAd(BaseVisiting):
 
     class Meta:
         verbose_name = "Ad Click"
+
+
+class Report(models.Model):
+    number_of_clicks = models.IntegerField()
+    number_of_views = models.IntegerField()
+    time = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'Report'
