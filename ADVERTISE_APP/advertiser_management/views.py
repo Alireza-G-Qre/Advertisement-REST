@@ -1,10 +1,15 @@
+from django.contrib.auth import login
 from django.db.models.functions import ExtractHour
 from django.views.generic import RedirectView
 from django.db.models import Count
 
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+
 from advertiser_management.serializers import *
 from rest_framework.viewsets import *
-from knox import views as knox
+from rest_framework.generics import *
 from .models import *
 
 
@@ -50,16 +55,24 @@ class AdView(ModelViewSet):
         result.data['views_per_hour'] = self.views_per_hour(self.get_object())
         return result
 
-    def create(self, request, *args, **kwargs):
-        request.data['advertiser'] = request.user.advertiser
-        return super(AdView, self).create(request, *args, **kwargs)
-
     class Meta:
         model = Ad
 
 
-class LoginKnoxView(knox.LoginView):
-    parser_classes = LoginSerializer
+class LoginAPIView(GenericAPIView):
+    serializer_class = UserSerializer
+
+    @staticmethod
+    def post(request):
+        user = get_object_or_404(
+            User,
+            username=request.data['username'],
+            password=request.data['password'],
+        )
+        token, created = Token.objects.get_or_create(user=user)
+        login(request, token.user)
+        return Response(data={'auth_token': token.key}, status=HTTP_200_OK)
+
 
 class ClickRedirect(RedirectView):
 

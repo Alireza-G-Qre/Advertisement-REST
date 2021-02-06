@@ -2,18 +2,6 @@ from rest_framework import serializers
 from .models import *
 
 
-class LoginSerializer(serializers.ModelSerializer):
-    username = serializers.EmailField(
-        max_length=100,
-        style={'placeholder': 'Email', 'autofocus': True}
-    )
-    password = serializers.CharField(
-        max_length=100,
-        style={'input_type': 'password', 'placeholder': 'Password'}
-    )
-    remember_me = serializers.BooleanField()
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta(serializers.SerializerMetaclass):
         model = User
@@ -42,7 +30,7 @@ class AdvertiseSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError({"detail": "no User"})
 
-        validated_data['advertiser'] = user
+        validated_data['advertiser'] = user.advertiser
         return super(AdvertiseSerializer, self).create(validated_data)
 
     class Meta(serializers.SerializerMetaclass):
